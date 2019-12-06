@@ -4,7 +4,7 @@ import { Text, View, StyleSheet } from "react-native";
 export function CardView(props) {
   return (
     <View style={styles.card}>
-      <Text>{props.name}asdad</Text>
+      <Text>{props.name}</Text>
     </View>
   );
 }
