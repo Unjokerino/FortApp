@@ -42,6 +42,8 @@ export default class HomeScreen extends React.Component {
     );
   };
 
+  _getUp;
+
   _renderItem = ({ item }) => (
     <CardView id={item.itemId} name={item.item.name} />
   );
@@ -54,11 +56,27 @@ export default class HomeScreen extends React.Component {
     return (
       <View style={styles.container}>
         <ScrollView>
+          <View style={styles.title_container}>
+            <Text style={styles.title}>Current Store</Text>
+          </View>
           <FlatList
             horizontal={true}
             showsHorizontalScrollIndicator={false}
             data={this.state.currentStore != [] ? this.state.currentStore : []}
             extraData={this.state}
+            keyExtractor={this._keyExtractor}
+            renderItem={this._renderItem}
+          />
+          <View style={styles.title_container}>
+            <Text style={styles.title}>Upcoming Items</Text>
+          </View>
+          <FlatList
+            bounces={true}
+            numColumns={2}
+            contentContainerStyle={{ flexGrow: 1, justifyContent: "center" }}
+            data={this.state.currentStore != [] ? this.state.currentStore : []}
+            extraData={this.state}
+            contentContainerStyle={styles.upcoming}
             keyExtractor={this._keyExtractor}
             renderItem={this._renderItem}
           />
@@ -74,5 +92,12 @@ const styles = StyleSheet.create({
     color: "#fff",
     backgroundColor: "#04181f",
     paddingTop: 30
+  },
+  upcoming: {
+    flex: 1,
+    justifyContent: "center"
+  },
+  title: {
+    color: "#fff"
   }
 });
