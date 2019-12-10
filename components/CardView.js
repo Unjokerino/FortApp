@@ -12,6 +12,7 @@ export function CardView(props) {
 
 const styles = StyleSheet.create({
   card: {
+    flex: 1,
     borderRadius: 10,
     alignItems: "center",
     justifyContent: "center",
@@ -19,6 +20,7 @@ const styles = StyleSheet.create({
     flexDirection: "column",
     backgroundColor: "white",
     width: 150,
+
     height: 150
   }
 });
