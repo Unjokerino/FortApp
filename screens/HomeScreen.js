@@ -13,8 +13,7 @@ import {
   Dimensions
 } from "react-native";
 import { Ionicons } from "@expo/vector-icons";
-import { MonoText } from "../components/StyledText";
-
+import { LinearGradient } from "expo-linear-gradient";
 import { CardView } from "../components/CardView";
 import { red } from "ansi-colors";
 
@@ -99,7 +98,19 @@ export default class HomeScreen extends React.Component {
   };
 
   _renderCurrentStoreItem = ({ item }) => (
-    <TouchableOpacity style={[styles.horyzontalCard, styles[item.item.rarity]]}>
+    <TouchableOpacity
+      style={[styles.horyzontalCard, styles.card, styles[item.item.rarity]]}
+    >
+      <LinearGradient
+        colors={["#4C4C52", "transparent"]}
+        style={{
+          position: "absolute",
+          left: 0,
+          right: 0,
+          top: 0,
+          height: "100%"
+        }}
+      />
       <Image
         style={{ flex: 1, width: "100%" }}
         source={{ uri: item.item.images.icon }}
@@ -127,7 +138,9 @@ export default class HomeScreen extends React.Component {
   );
 
   _renderUpcomingItem = ({ item }) => (
-    <TouchableOpacity style={[styles.card, styles[item.rarity]]}>
+    <TouchableOpacity
+      style={[styles.verticalCard, styles.card, styles[item.rarity]]}
+    >
       <Ionicons
         onPress={() => {
           this._favoriteOnPress(item.name);
@@ -143,7 +156,18 @@ export default class HomeScreen extends React.Component {
           zIndex: 9
         }}
       />
+      <LinearGradient
+        colors={["#4C4C52", "transparent"]}
+        style={{
+          position: "absolute",
+          left: 0,
+          right: 0,
+          top: 0,
+          height: "100%"
+        }}
+      />
       <Image style={{ flex: 1, width: "100%" }} source={{ uri: item.image }} />
+
       <View
         style={{
           position: "absolute",
@@ -260,19 +284,15 @@ const styles = StyleSheet.create({
     color: "#fff",
     justifyContent: "center",
     flex: 1,
-
-    margin: 5,
+    borderColor: "#4D243D",
+    elevation: 20,
+    margin: 7
+  },
+  verticalCard: {
     height: Dimensions.get("window").width / numColumns // approximate a square
   },
 
   horyzontalCard: {
-    backgroundColor: "#4D243D",
-    alignItems: "center",
-    color: "#fff",
-    justifyContent: "center",
-    flex: 1,
-
-    margin: 5,
     width: Dimensions.get("window").width / numColumns, // approximate a square
     height: Dimensions.get("window").width / numColumns
   },
