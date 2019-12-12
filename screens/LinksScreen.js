@@ -63,10 +63,11 @@ class ExpandableItemComponent extends Component {
           }}
         >
           {/*Content under the header of the Expandable List Item*/}
+          <Text style={styles.subtitle}>Normal Challenges</Text>
           {this.props.item[0].challenges.map((item, key) => (
             <TouchableOpacity
               key={key}
-              style={[styles.content, key === 0 ? { marginTop: 10 } : ""]}
+              style={[styles.content]}
               onPress={() => alert("Id: ")}
             >
               <View
@@ -83,10 +84,12 @@ class ExpandableItemComponent extends Component {
               </View>
             </TouchableOpacity>
           ))}
+          <Text style={styles.subtitle}>Prestige Challenges</Text>
+
           {this.props.item[1].challenges.map((item, key) => (
             <TouchableOpacity
               key={key}
-              style={[styles.content, key === 0 ? { marginTop: 10 } : ""]}
+              style={[styles.content]}
               onPress={() => alert("Id: ")}
             >
               <View
@@ -138,7 +141,7 @@ export default class LinksScreen extends Component {
             : (element.isExpanded = false);
 
           this.setState({
-            challenges: [...this.state.challenges, element]
+            challenges: [element, ...this.state.challenges]
           });
         });
       }
@@ -218,6 +221,13 @@ const styles = StyleSheet.create({
   topHeading: {
     paddingLeft: 10,
     fontSize: 20
+  },
+  subtitle: {
+    color: "#fff",
+    padding: 5,
+    backgroundColor: "#51668bd1",
+    marginHorizontal: 8,
+    marginTop: 10
   },
   header: {
     opacity: 0.6,
