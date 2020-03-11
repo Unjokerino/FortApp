@@ -9,90 +9,34 @@ import TabBarIcon from "../components/TabBarIcon";
 import HomeScreen from "../screens/HomeScreen";
 import LinksScreen from "../screens/LinksScreen";
 import SettingsScreen from "../screens/SettingsScreen";
+import { BottomNavigation, Text } from 'react-native-paper';
 
-const config = Platform.select({
-  web: { headerMode: "screen" },
-  default: {}
-});
 
-const HomeStack = createStackNavigator(
-  {
-    Home: HomeScreen
-  },
-  config
-);
+export default class MainTabNavigator extends React.Component {
+  state = {
+    index: 0,
+    routes: [
+      { key: 'items', title: 'Items', icon: 'hanger', color: '#3F51B5'},
+      { key: 'challenges', title: 'Challenges', icon: 'controller-classic',color: '#009688' },
+      { key: 'stats', title: 'Stats', icon: 'clipboard',color: '#795548' },
+    ],
+  };
 
-HomeStack.navigationOptions = {
-  tabBarLabel: "Home",
-  tabBarIcon: ({ focused }) => (
-    <TabBarIcon
-      focused={focused}
-      name={
-        Platform.OS === "ios"
-          ? `ios-home${focused ? "" : "-outline"}`
-          : "md-home"
-      }
-    />
-  )
-};
+  _handleIndexChange = index => this.setState({ index });
 
-HomeStack.path = "";
+  _renderScene = BottomNavigation.SceneMap({
+    challenges: LinksScreen,
+    items: HomeScreen,
+    stats: SettingsScreen,
+  });
 
-const LinksStack = createStackNavigator(
-  {
-    Links: LinksScreen
-  },
-  config
-);
-
-LinksStack.navigationOptions = {
-  tabBarLabel: "Links",
-  tabBarIcon: ({ focused }) => (
-    <TabBarIcon
-      focused={focused}
-      name={Platform.OS === "ios" ? "ios-trophy" : "ios-trophy"}
-    />
-  )
-};
-
-LinksStack.path = "";
-
-const SettingsStack = createStackNavigator(
-  {
-    Settings: SettingsScreen
-  },
-  config
-);
-
-SettingsStack.navigationOptions = {
-  tabBarLabel: "Settings",
-  tabBarIcon: ({ focused }) => (
-    <TabBarIcon
-      focused={focused}
-      name={Platform.OS === "ios" ? "ios-person" : "md-person"}
-    />
-  )
-};
-
-SettingsStack.path = "";
-
-const tabNavigator = createBottomTabNavigator(
-  {
-    SettingsStack,
-    HomeStack,
-    LinksStack
-  },
-  {
-    tabBarOptions: {
-      showLabel: false,
-      activeTintColor: "#fff", // active icon color
-      style: {
-        backgroundColor: "#171F33" // TabBar background
-      }
-    }
+  render() {
+    return (
+      <BottomNavigation
+        navigationState={this.state}
+        onIndexChange={this._handleIndexChange}
+        renderScene={this._renderScene}
+      />
+    );
   }
-);
-
-tabNavigator.path = "";
-
-export default tabNavigator;
+}

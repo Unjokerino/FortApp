@@ -1,4 +1,4 @@
-import React from "react";
+import React,{useState,useEffect} from "react";
 import {
   Image,
   Platform,
@@ -14,7 +14,7 @@ import {
 } from "react-native";
 import { Ionicons } from "@expo/vector-icons";
 import { LinearGradient } from "expo-linear-gradient";
-import { CardView } from "../components/CardView";
+import ItemCard from "../components/ItemCard";
 import { red } from "ansi-colors";
 
 const numColumns = 2;
@@ -34,218 +34,79 @@ const formatData = (data, numColumns) => {
   return data;
 };
 
-export default class HomeScreen extends React.Component {
-  static navigationOptions = {
-    header: null
-  };
+export default function HomeScreen(props) {
+  
+    const [currentStore, setcurrentStore] = useState([])
+    const [upcomingItems, setupcomingItems] = useState([])
+    const [refreshing, setrefreshing] = useState(false)
 
-  constructor(props) {
-    super(props);
-    this.state = {
-      currentStore: [],
-      upcomingItems: [],
-      refreshing: true
+    const loadItems = () => {
+        setrefreshing(true)
+        _getItems("https://fortnite-api.theapinetwork.com/store/get").then((data) => {
+          let items = []
+          data.data.map(element => {
+            element.item.price = "???"
+            element.item.title = element.item.name
+            element.item.image = element.item.images.icon
+            items.push(element.item)
+          });
+          setcurrentStore(items)
+        });
+        _getItems("https://wsolver.ru/fortApp/upcomingItems.json").then(setupcomingItems);
+        setrefreshing(false)
     };
-  }
 
-  _getCurrentStore = () => {
-    fetch("https://fortnite-api.theapinetwork.com/store/get").then(
-      async response => {
-        const text = await response.text();
-        if ((json_text = JSON.parse(text))) {
-          this.setState({
-            currentStore: []
-          });
+    useEffect(() => {
+      loadItems()
+    }, [])
 
-          json_text.data.forEach(element => {
-            this.setState({
-              currentStore: [...this.state.currentStore, element]
-            });
-          });
-        }
-      }
-    );
-  };
+    async function _getItems(url){
+        let result = fetch(url).then(
+            async response => {
+                const json = await response.json();
+                return json
+            }
+        );
+        return result
+    };
 
-  loadItems = () => {
-    this._getCurrentStore();
-    this._getUpcomingItems();
 
-    this.setState({
-      refreshing: false
-    });
-  };
 
-  _getUpcomingItems = () => {
-    fetch("https://wsolver.ru/fortApp/upcomingItems.json").then(
-      async response => {
-        const text = await response.text();
-        if ((json_text = JSON.parse(text))) {
-          this.setState({
-            upcomingItems: []
-          });
-          json_text.forEach(element => {
-            this.setState({
-              upcomingItems: [...this.state.upcomingItems, element]
-            });
-          });
-        }
-      }
-    );
-  };
-  _favoriteOnPress = name => {
-    console.log(name);
-  };
 
-  _renderCurrentStoreItem = ({ item }) => (
-    <TouchableOpacity
-      style={[styles.horyzontalCard, styles.card, styles[item.item.rarity]]}
-    >
-      <LinearGradient
-        colors={["#4C4C52", "transparent"]}
-        style={{
-          position: "absolute",
-          left: 0,
-          right: 0,
-          top: 0,
-          height: "100%"
-        }}
-      />
-      <Image
-        style={{ flex: 1, width: "100%" }}
-        source={{ uri: item.item.images.icon }}
-      />
-      <View
-        style={{
-          position: "absolute",
-          bottom: 0,
-          paddingVertical: 5,
-          paddingHorizontal: 10,
-          justifyContent: "center",
-          alignItems: "center",
-          backgroundColor: "#0e0e0e52",
-          width: "100%"
-        }}
-      >
-        <Text style={{ flex: 1, width: "100%" }} style={styles.cardText}>
-          {item.item.name}
-        </Text>
-        <Text style={{ flex: 1, width: "100%" }} style={styles.cardText}>
-          {item.store.cost}
-        </Text>
-      </View>
-    </TouchableOpacity>
-  );
-
-  _renderUpcomingItem = ({ item }) => (
-    <TouchableOpacity
-      style={[styles.verticalCard, styles.card, styles[item.rarity]]}
-    >
-      <Ionicons
-        onPress={() => {
-          this._favoriteOnPress(item.name);
-        }}
-        name="md-star"
-        size={38}
-        color="#fff"
-        style={{
-          position: "absolute",
-          top: 0,
-          right: 0,
-          padding: 5,
-          zIndex: 9
-        }}
-      />
-      <LinearGradient
-        colors={["#4C4C52", "transparent"]}
-        style={{
-          position: "absolute",
-          left: 0,
-          right: 0,
-          top: 0,
-          height: "100%"
-        }}
-      />
-      <Image style={{ flex: 1, width: "100%" }} source={{ uri: item.image }} />
-
-      <View
-        style={{
-          position: "absolute",
-          bottom: 0,
-          paddingVertical: 5,
-          paddingHorizontal: 10,
-          justifyContent: "center",
-          alignItems: "center",
-          backgroundColor: "#0e0e0e52",
-          width: "100%"
-        }}
-      >
-        <Text style={{ flex: 1, width: "100%" }} style={styles.cardText}>
-          {item.name}
-        </Text>
-        <Text style={{ flex: 1, width: "100%" }} style={styles.cardText}>
-          {item.price}
-        </Text>
-      </View>
-    </TouchableOpacity>
-  );
-
-  _keyExtractor = item => {
-    return item.name;
-  };
-
-  componentDidMount() {
-    this.loadItems();
-  }
-
-  render() {
-    const upcomingItemsLoading =
-      this.state.upcomingItems.length != 0 ? (
-        <FlatList
-          data={this.state.upcomingItems}
-          keyExtractor={this._keyExtractor}
-          renderItem={this._renderUpcomingItem}
-          numColumns={numColumns}
-        />
-      ) : (
-        <ActivityIndicator style={styles.activityIndicator} size="large" />
-      );
-
-    const currentShopLoading =
-      this.state.upcomingItems.length != 0 ? (
-        <FlatList
-          horizontal={true}
-          showsHorizontalScrollIndicator={false}
-          data={this.state.currentStore}
-          keyExtractor={this._keyExtractor}
-          renderItem={this._renderCurrentStoreItem}
-        />
-      ) : (
-        <ActivityIndicator style={styles.activityIndicator} size="large" />
-      );
     return (
       <View style={styles.container}>
         <ScrollView
           refreshControl={
             <RefreshControl
-              refreshing={this.state.refreshing}
-              onRefresh={this.loadItems}
+              refreshing={refreshing}
+              onRefresh={loadItems}
             />
           }
         >
           <View style={{ backgroundColor: "#51668b9e" }}>
             <Text style={styles.title}>Current Store</Text>
+            <ScrollView horizontal={true} >   
+              {currentStore.map(item =>{
+                return(
+                  <ItemCard key = {item.title} {...item} />
+                )
+              })}
+            </ScrollView>
           </View>
-
-          {currentShopLoading}
           <View style={{ backgroundColor: "#51668b9e" }}>
             <Text style={styles.title}>Upcoming Items</Text>
           </View>
-          {upcomingItemsLoading}
+          <View style={styles.upcomingItemsContainer}>
+            {upcomingItems.map(item =>{
+              return(
+                <ItemCard key = {item.title} {...item} />
+              )
+            })}
+          </View>
         </ScrollView>
       </View>
     );
-  }
+
 }
 
 const styles = StyleSheet.create({
@@ -255,10 +116,9 @@ const styles = StyleSheet.create({
     backgroundColor: "#04181f",
     paddingTop: 30
   },
-  upcoming: {
-    backgroundColor: "red",
-
-    justifyContent: "center"
+  upcomingItemsContainer: {
+    flexWrap:'wrap',
+    flexDirection:'row'
   },
   activityIndicator: {
     flex: 1,

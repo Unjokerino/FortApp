@@ -1,18 +1,36 @@
 import React from "react";
 import { createAppContainer, createSwitchNavigator } from "react-navigation";
-
+import { createStackNavigator } from "@react-navigation/stack";
+import { BottomNavigation, Text, Appbar } from "react-native-paper";
+import { NavigationContainer } from "@react-navigation/native";
 import MainTabNavigator from "./MainTabNavigator";
+import DetailItemsScreen from "../screens/DetailItemsScreen";
+import HomeScreen from "../screens/HomeScreen";
 
-export default createAppContainer(
-  createSwitchNavigator({
-    // You could add another route here for authentication.
-    // Read more at https://reactnavigation.org/docs/en/auth-flow.html
-    Main: {
-      screen: MainTabNavigator,
-      navigationOptions: () => ({
-        header: null,
-        headerMode: "screen"
-      })
-    }
-  })
-);
+
+const Stack = createStackNavigator();
+
+export default function StuckNaviagtor(){
+
+    return(
+      <NavigationContainer>
+        <Stack.Navigator>
+          <Stack.Screen
+              options={{
+                  headerShown: false
+              }}
+              name="Home"
+              component={MainTabNavigator}
+          />
+          <Stack.Screen
+              options={{
+                  headerShown: true
+              }}
+              name="DetailItemsScreen"
+              component={HomeScreen}
+          />
+          </Stack.Navigator>
+    </NavigationContainer>
+    )
+}
+
